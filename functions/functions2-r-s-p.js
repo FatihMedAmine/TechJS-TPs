@@ -59,8 +59,6 @@ function playGame(playerMove) {
     }
   }
 
-  console.log(result);
-
   // update the score and store it using localStorage.setItem
   updateScoreElement();
   localStorage.setItem("score", JSON.stringify(score));
@@ -91,4 +89,23 @@ function pickComputerMove() {
   }
 
   return computerMove;
+}
+
+var isAutoPlay = false;
+var timeOutId;
+
+function handleClickAutoPlay() {
+  isAutoPlay = !isAutoPlay;
+
+  if (isAutoPlay) autoPlay();
+  else {
+    clearTimeout(timeOutId);
+  }
+}
+
+function autoPlay() {
+  let userChoice = pickComputerMove();
+  playGame(userChoice);
+
+  timeOutId = setTimeout(autoPlay, 2000);
 }
