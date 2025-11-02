@@ -9,11 +9,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   "/books",
   (req, res, next) => {
-    //
+    // middleware d'authentification 
     const auth = { login: "admin", password: "admin" };
     const b64auth = (req.headers.authorization || "").split(" ")[1] || "";
-    const [login, password] = ["admin","admin"]
-    if (login === auth.login && password === auth.password) {
+    //recupération des identifiants from session
+    const [loginDecoded, passwordDecoded] = Buffer.from(b64auth, "base64")
+      .toString()
+      .split(":");
+    if (loginDecoded === auth.login && passwordDecoded === auth.password) {
       return next();
     }
     res.send("Unauthorized");
