@@ -1,0 +1,135 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title Books Library
+    script(src='https://cdn.tailwindcss.com')
+  body.bg-gradient-to-br.from-green-50.to-blue-100.min-h-screen
+    nav.bg-white.shadow-lg
+      div(class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8')
+        .flex.justify-between.items-center.h-16
+          .flex.items-center
+            h1.text-2xl.font-bold.text-indigo-600 📚 Book Library
+          .flex.items-center.space-x-4
+            span.text-gray-700 Welcome, 
+              strong= user.username
+            form(action='/logout', method='POST')
+              button.bg-red-500.text-white.font-semibold.py-2.px-4.rounded.transition.duration-200(type='submit', class='hover:bg-red-600') Logout
+    
+    main(class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8')
+      .mb-8
+        .flex.justify-between.items-center.mb-4
+          div
+            h2.text-3xl.font-bold.text-gray-800.mb-2 Available Books
+            p.text-gray-600 Browse through our collection
+          button#addBookBtn.bg-indigo-600.text-white.font-semibold.py-2.px-6.rounded-lg.transition.duration-200(class='hover:bg-indigo-700') + Add New Book
+      
+      //- Add Book Form (Hidden by default)
+      #addBookForm.hidden.mb-8
+        div(class='bg-white rounded-lg shadow-lg p-6')
+          h3.text-2xl.font-bold.text-gray-800.mb-4 Add New Book
+          form#bookForm
+            .grid.grid-cols-1.gap-4(class='md:grid-cols-2')
+              div
+                label.block.text-gray-700.font-semibold.mb-2(for='title') Title *
+                input#title.w-full.px-4.py-2.border.rounded-lg(class='focus:outline-none focus:ring-2 focus:ring-indigo-500', type='text', name='title', required)
+              div
+                label.block.text-gray-700.font-semibold.mb-2(for='author') Author *
+                input#author.w-full.px-4.py-2.border.rounded-lg(class='focus:outline-none focus:ring-2 focus:ring-indigo-500', type='text', name='author', required)
+              div
+                label.block.text-gray-700.font-semibold.mb-2(for='year') Year
+                input#year.w-full.px-4.py-2.border.rounded-lg(class='focus:outline-none focus:ring-2 focus:ring-indigo-500', type='number', name='year')
+              div
+                label.block.text-gray-700.font-semibold.mb-2(for='genre') Genre
+                input#genre.w-full.px-4.py-2.border.rounded-lg(class='focus:outline-none focus:ring-2 focus:ring-indigo-500', type='text', name='genre')
+              div(class='md:col-span-2')
+                label.block.text-gray-700.font-semibold.mb-2(for='description') Description
+                textarea#description.w-full.px-4.py-2.border.rounded-lg(class='focus:outline-none focus:ring-2 focus:ring-indigo-500', name='description', rows='3')
+            .flex.gap-4.mt-4
+              button.bg-indigo-600.text-white.font-semibold.py-2.px-6.rounded-lg.transition.duration-200(type='submit', class='hover:bg-indigo-700') Save Book
+              button#cancelBtn.bg-gray-400.text-white.font-semibold.py-2.px-6.rounded-lg.transition.duration-200(type='button', class='hover:bg-gray-500') Cancel
+          #message.mt-4.hidden
+      
+      if books.length === 0
+        .bg-white.rounded-lg.shadow.p-8.text-center
+          p.text-gray-500.text-lg No books available at the moment.
+      else
+        div(class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6')
+          each book in books
+            div(class='bg-white rounded-lg shadow-lg p-6 transition duration-300 transform hover:shadow-xl hover:-translate-y-1')
+              .mb-4
+                h3.text-xl.font-bold.text-gray-800.mb-2= book.title
+                p.text-gray-600.mb-1
+                  span.font-semibold Author: 
+                  span= book.author
+                if book.year
+                  p.text-gray-600.mb-1
+                    span.font-semibold Year: 
+                    span= book.year
+                if book.genre
+                  p.text-gray-500.text-sm
+                    span.inline-block.bg-indigo-100.text-indigo-800.px-3.py-1.rounded-full.text-xs.font-semibold= book.genre
+                if book.description
+                  p.text-gray-600.mt-3.text-sm= book.description
+    
+    script.
+      // Toggle add book form
+      document.getElementById('addBookBtn').addEventListener('click', function() {
+        document.getElementById('addBookForm').classList.toggle('hidden');
+      });
+      
+      // Cancel button
+      document.getElementById('cancelBtn').addEventListener('click', function() {
+        document.getElementById('addBookForm').classList.add('hidden');
+        document.getElementById('bookForm').reset();
+        document.getElementById('message').classList.add('hidden');
+      });
+      
+      // Handle form submission
+      document.getElementById('bookForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = {
+          title: document.getElementById('title').value,
+          author: document.getElementById('author').value,
+          year: document.getElementById('year').value ? parseInt(document.getElementById('year').value) : null,
+          genre: document.getElementById('genre').value,
+          description: document.getElementById('description').value
+        };
+        
+        try {
+          const response = await fetch('/books/api/books', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+          });
+          
+          const result = await response.json();
+          
+          if (response.ok) {
+            // Show success message
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = 'mt-4 p-4 bg-green-100 text-green-700 rounded-lg';
+            messageDiv.textContent = 'Book added successfully!';
+            messageDiv.classList.remove('hidden');
+            
+            // Reset form
+            document.getElementById('bookForm').reset();
+            
+            // Reload page after 1 second
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          } else {
+            throw new Error(result.message || 'Error adding book');
+          }
+        } catch (error) {
+          const messageDiv = document.getElementById('message');
+          messageDiv.className = 'mt-4 p-4 bg-red-100 text-red-700 rounded-lg';
+          messageDiv.textContent = 'Error: ' + error.message;
+          messageDiv.classList.remove('hidden');
+        }
+      });
