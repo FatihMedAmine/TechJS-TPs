@@ -24,16 +24,6 @@ const bookSchema = new Schema({
   publishedDate: { type: Date },
 });
 
-// Calculate reading percentage
-bookSchema.virtual('readingPercentage').get(function() {
-  if (this.numberOfPages === 0) return 0;
-  return Math.round((this.numberOfPagesRead / this.numberOfPages) * 100);
-});
-
-// Ensure virtuals are included in JSON
-bookSchema.set('toJSON', { virtuals: true });
-bookSchema.set('toObject', { virtuals: true });
-
 const Book = mongoose.model("Book", bookSchema);
 
 module.exports = Book;
