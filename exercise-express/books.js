@@ -109,4 +109,20 @@ router.put("/api/books/:id/progress", async (req, res) => {
   }
 });
 
+// API endpoint to delete a book
+router.delete("/api/books/:id", async (req, res) => {
+  try {
+    const book = await Book.findById(req.params.id);
+    
+    if (!book) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+    
+    await Book.findByIdAndDelete(req.params.id);
+    res.json({ message: "Book deleted successfully" });
+  } catch (error) {
+    res.status(400).json({ message: "Error deleting book", error: error.message });
+  }
+});
+
 module.exports = router;
