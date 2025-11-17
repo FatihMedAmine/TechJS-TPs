@@ -9,8 +9,9 @@ html(lang='en')
     nav.bg-white.shadow-lg
       div(class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8')
         .flex.justify-between.items-center.h-16
-          .flex.items-center
-            h1.text-2xl.font-bold.text-indigo-600 📚 Book Library
+          .flex.items-end.space-x-6
+            h1.text-2xl.font-bold.text-indigo-600  Book Library
+            a.text-purple-600.font-semibold(href='/books/tracker', class='hover:text-purple-800') Reading Tracker
           .flex.items-center.space-x-4
             span.text-gray-700 Welcome, 
               strong= user.username
@@ -38,14 +39,28 @@ html(lang='en')
                 label.block.text-gray-700.font-semibold.mb-2(for='author') Author *
                 input#author.w-full.px-4.py-2.border.rounded-lg(class='focus:outline-none focus:ring-2 focus:ring-indigo-500', type='text', name='author', required)
               div
-                label.block.text-gray-700.font-semibold.mb-2(for='year') Year
-                input#year.w-full.px-4.py-2.border.rounded-lg(class='focus:outline-none focus:ring-2 focus:ring-indigo-500', type='number', name='year')
+                label.block.text-gray-700.font-semibold.mb-2(for='numberOfPages') Number of Pages *
+                input#numberOfPages.w-full.px-4.py-2.border.rounded-lg(class='focus:outline-none focus:ring-2 focus:ring-indigo-500', type='number', name='numberOfPages', min='0', required)
               div
-                label.block.text-gray-700.font-semibold.mb-2(for='genre') Genre
-                input#genre.w-full.px-4.py-2.border.rounded-lg(class='focus:outline-none focus:ring-2 focus:ring-indigo-500', type='text', name='genre')
-              div(class='md:col-span-2')
-                label.block.text-gray-700.font-semibold.mb-2(for='description') Description
-                textarea#description.w-full.px-4.py-2.border.rounded-lg(class='focus:outline-none focus:ring-2 focus:ring-indigo-500', name='description', rows='3')
+                label.block.text-gray-700.font-semibold.mb-2(for='format') Format *
+                select#format.w-full.px-4.py-2.border.rounded-lg(class='focus:outline-none focus:ring-2 focus:ring-indigo-500', name='format', required)
+                  option(value='Print') Print
+                  option(value='PDF') PDF
+                  option(value='EBook') EBook
+                  option(value='AudioBook') AudioBook
+              div
+                label.block.text-gray-700.font-semibold.mb-2(for='status') Status *
+                select#status.w-full.px-4.py-2.border.rounded-lg(class='focus:outline-none focus:ring-2 focus:ring-indigo-500', name='status', required)
+                  option(value='Unread') Unread
+                  option(value='Want to read') Want to read
+                  option(value='Currently reading') Currently reading
+                  option(value='Read') Read
+                  option(value='Re-read') Re-read
+                  option(value='DNF') DNF
+                  option(value='Returned') Returned
+              div
+                label.block.text-gray-700.font-semibold.mb-2(for='price') Price ($) *
+                input#price.w-full.px-4.py-2.border.rounded-lg(class='focus:outline-none focus:ring-2 focus:ring-indigo-500', type='number', name='price', min='0', step='0.01', required)
             .flex.gap-4.mt-4
               button.bg-indigo-600.text-white.font-semibold.py-2.px-6.rounded-lg.transition.duration-200(type='submit', class='hover:bg-indigo-700') Save Book
               button#cancelBtn.bg-gray-400.text-white.font-semibold.py-2.px-6.rounded-lg.transition.duration-200(type='button', class='hover:bg-gray-500') Cancel
@@ -63,15 +78,16 @@ html(lang='en')
                 p.text-gray-600.mb-1
                   span.font-semibold Author: 
                   span= book.author
-                if book.year
+                p.text-gray-600.mb-1
+                  span.font-semibold Pages: 
+                  span= book.numberOfPages
+                if book.price
                   p.text-gray-600.mb-1
-                    span.font-semibold Year: 
-                    span= book.year
-                if book.genre
-                  p.text-gray-500.text-sm
-                    span.inline-block.bg-indigo-100.text-indigo-800.px-3.py-1.rounded-full.text-xs.font-semibold= book.genre
-                if book.description
-                  p.text-gray-600.mt-3.text-sm= book.description
+                    span.font-semibold Price: 
+                    span $#{book.price}
+                .flex.gap-2.mt-2
+                  span.inline-block.bg-blue-100.text-blue-800.px-2.py-1.rounded.text-xs.font-semibold= book.format
+                  span.inline-block.bg-green-100.text-green-800.px-2.py-1.rounded.text-xs.font-semibold= book.status
     
     script.
       // Toggle add book form
@@ -93,9 +109,10 @@ html(lang='en')
         const formData = {
           title: document.getElementById('title').value,
           author: document.getElementById('author').value,
-          year: document.getElementById('year').value ? parseInt(document.getElementById('year').value) : null,
-          genre: document.getElementById('genre').value,
-          description: document.getElementById('description').value
+          numberOfPages: parseInt(document.getElementById('numberOfPages').value) || 0,
+          format: document.getElementById('format').value,
+          status: document.getElementById('status').value,
+          price: parseFloat(document.getElementById('price').value) || 0
         };
         
         try {

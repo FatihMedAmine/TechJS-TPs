@@ -43,6 +43,11 @@ class Book {
     return this.numberOfPagesRead;
   }
 
+  getReadingPercentage(): number {
+    if (this.numberOfPages === 0) return 0;
+    return Math.round((this.numberOfPagesRead / this.numberOfPages) * 100);
+  }
+
   deleteBook(): void {
     // Implementation for deleting the book can be added here
   }
