@@ -9,24 +9,30 @@ const bookSchema = new Schema({
   status: { 
     type: String, 
     enum: ['Read', 'Re-read', 'DNF', 'Currently reading', 'Returned', 'Unread', 'Want to read'],
-    required: true,
     default: 'Unread'
   },
-  price: { type: Number, required: true, default: 0 },
+  price: { type: Number, default: 0 },
   format: { 
     type: String, 
     enum: ['Print', 'PDF', 'EBook', 'AudioBook'],
-    required: true,
     default: 'Print'
   },
-  finished: { type: Boolean, default: false }
+  finished: { type: Boolean, default: false },
+  year: { type: Number },
+  genre: { type: String },
+  description: { type: String },
+  publishedDate: { type: Date },
 });
 
-// Method to calculate reading percentage (matching Book.ts logic)
-bookSchema.methods.getReadingPercentage = function() {
+// Calculate reading percentage
+bookSchema.virtual('readingPercentage').get(function() {
   if (this.numberOfPages === 0) return 0;
   return Math.round((this.numberOfPagesRead / this.numberOfPages) * 100);
-};
+});
+
+// Ensure virtuals are included in JSON
+bookSchema.set('toJSON', { virtuals: true });
+bookSchema.set('toObject', { virtuals: true });
 
 const Book = mongoose.model("Book", bookSchema);
 
