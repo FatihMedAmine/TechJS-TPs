@@ -5,7 +5,7 @@ const MongoStore = require("connect-mongo");
 const connectDB = require("./config/db");
 const bcrypt = require("bcrypt");
 
-const booksRouter = require("./books");
+const booksRouter = require("./books.ts");
 const usersRouter = require("./users");
 const User = require("./models/user");
 const { ensureAuthenticated } = require("./middleware/auth");

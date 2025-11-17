@@ -51,6 +51,29 @@ class Book {
   deleteBook(): void {
     // Implementation for deleting the book can be added here
   }
+
+  //getter methods
+  getTitle(): string {
+    return this.title;
+  }
+  getAuthor(): string {
+    return this.author;
+  }
+  getNumberOfPages(): number {
+    return this.numberOfPages;
+  }
+  getStatus(): Status {
+    return this.status;
+  }
+  getPrice(): number {
+    return this.price;
+  }
+  getFormat(): Format {
+    return this.format;
+  }
+  isFinished(): boolean {
+    return this.finished;
+  }
 }
 
-export { Book };
+export type { Book as BookType };
